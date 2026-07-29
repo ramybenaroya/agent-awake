@@ -1,0 +1,6 @@
+# AgentAwake: allow the exact pmset sleep-toggle commands without a password.
+# Install to /etc/sudoers.d/agent_awake_pmset with root:wheel 0440.
+# The installed filename must not contain a dot, or sudo ignores the file.
+# Validate BEFORE installing: sudo visudo -cf install/agent_awake_pmset
+Cmnd_Alias AGENT_AWAKE_PMSET = /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset -a disablesleep 0
+%admin ALL=(ALL) NOPASSWD: AGENT_AWAKE_PMSET
