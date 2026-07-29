@@ -21,7 +21,10 @@ the corresponding `disablesleep 0` command. Commands only run on transitions.
 `INSTALL.md` is an agent-ready installation guide: hand it to a coding agent
 (or follow it yourself) to verify/install Hammerspoon, link the Spoon, wire
 `init.lua`, and install the sudoers rule. Everything the Spoon needs ships in
-this repository.
+this repository. The guide is standalone — if the agent is not already inside
+a checkout of this repository, it clones
+<https://github.com/ramybenaroya/agent-awake> to a temporary directory and
+installs from there (copying the Spoon instead of symlinking).
 
 The project can live anywhere; Hammerspoon loads it through a symlink:
 
