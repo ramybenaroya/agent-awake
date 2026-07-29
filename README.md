@@ -61,12 +61,19 @@ Reload Hammerspoon's config after changing the Spoon.
 
 ## Menu states
 
-- `○` normal sleep
-- `●` automatic keep-awake owned by AgentAwake
+The menu bar shows the AgentAwake logo: dimmed while sleep is normal, full
+while sleep is disabled. States other than plain normal sleep and automatic
+keep-awake add a status glyph next to the logo:
+
 - `◆` manual keep-awake owned by AgentAwake
 - `◐` sleep was already disabled outside AgentAwake
+- `◌` waiting to restore normal sleep
+- `…` power state changing or keep-awake requested
 - `⚠` low-battery cutoff
 - `!` command or detection error
+
+If the logo image cannot be loaded, the menu bar falls back to text glyphs
+(`○` normal sleep, `●` automatic keep-awake, plus the list above).
 
 The menu can toggle automatic mode, request a manual keep-awake state, force
 normal sleep, choose a battery cutoff, refresh detection, or retry an error.

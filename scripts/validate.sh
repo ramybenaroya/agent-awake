@@ -37,6 +37,10 @@ else
   echo "AgentAwake.spoon is not installed in ~/.hammerspoon/Spoons" >&2
   exit 1
 fi
+if [ ! -f "$SPOON_INSTALL/assets/menubar-icon.svg" ]; then
+  echo "Installed Spoon is missing assets/menubar-icon.svg; re-run the install step to refresh it" >&2
+  exit 1
+fi
 grep -q 'pcall(hs.loadSpoon, "AgentAwake")' "$HOME/.hammerspoon/init.lua"
 grep -q 'spoon.AgentAwake:start()' "$HOME/.hammerspoon/init.lua"
 

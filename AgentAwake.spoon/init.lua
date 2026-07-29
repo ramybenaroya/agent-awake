@@ -1,6 +1,6 @@
 local obj = {
   name = "AgentAwake",
-  version = "0.2.1",
+  version = "0.3.0",
   author = "Ramy",
   license = "MIT",
   pollInterval = 10,
@@ -16,6 +16,33 @@ local CODEX_BUNDLE_ID = "com.openai.codex"
 local PMSET = "/usr/bin/pmset"
 local SUDO = "/usr/bin/sudo"
 local PROCESS_MATCH = "/usr/bin/pgrep"
+
+local MENU_ICON_SIZE = { w = 24, h = 16 }
+local MENU_ICON_DIM_ALPHA = 0.35
+-- Steady states are conveyed by the logo alone (full vs dim); every other
+-- state keeps its status glyph next to the logo.
+local LOGO_ONLY_GLYPHS = { ["○"] = true, ["●"] = true }
+
+local function loadMenuIcons(spoonPath)
+  local logo = hs.image.imageFromPath(spoonPath .. "assets/menubar-icon.svg")
+  if not logo then
+    return nil
+  end
+  local full = logo:size(MENU_ICON_SIZE):template(true)
+  -- The dim variant goes through a canvas because hs.image cannot apply
+  -- alpha; render at 2x so the resulting bitmap stays crisp on retina.
+  local canvas = hs.canvas.new({
+    x = 0, y = 0,
+    w = MENU_ICON_SIZE.w * 2, h = MENU_ICON_SIZE.h * 2,
+  })
+  canvas[1] = { type = "image", image = logo, imageAlpha = MENU_ICON_DIM_ALPHA }
+  local dim = canvas:imageFromCanvas()
+  canvas:delete()
+  if dim then
+    dim = dim:size(MENU_ICON_SIZE):template(true)
+  end
+  return { full = full, dim = dim or full }
+end
 
 local function settingKey(name)
   return SETTINGS_PREFIX .. name
@@ -547,7 +574,16 @@ function obj:_refreshMenu()
     return
   end
   local title, label, reasons = self:_statePresentation()
-  self.menuBar:setTitle(title)
+  if self.menuIcons then
+    self.menuBar:setIcon(self.sleepDisabled and self.menuIcons.full or self.menuIcons.dim)
+    if LOGO_ONLY_GLYPHS[title] then
+      self.menuBar:setTitle(nil)
+    else
+      self.menuBar:setTitle(title)
+    end
+  else
+    self.menuBar:setTitle(title)
+  end
   local tooltip = "AgentAwake: " .. label
   if #reasons > 0 then
     tooltip = tooltip .. "\n" .. table.concat(reasons, ", ")
@@ -708,6 +744,7 @@ function obj:start()
   self.log = hs.logger.new(self.name, "info")
   self.spoonPath = hs.spoons.scriptPath()
   self.processDetector = dofile(self.spoonPath .. "lib/process_detection.lua")
+  self.menuIcons = loadMenuIcons(self.spoonPath)
   self.targetState = { gui = false, codex = 0, claude = 0 }
   self.autoEnabled = boolSetting("autoEnabled", true)
   self.manualAwake = boolSetting("manualAwake", false)

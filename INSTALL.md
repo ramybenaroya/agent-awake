@@ -216,10 +216,11 @@ unit-test portion needs a Lua interpreter (`brew install lua`); without one
 the script says so and skips those checks, which is acceptable — a clean
 Hammerspoon reload is the authoritative runtime validation.
 
-Finally, ask the user to confirm a `○` icon appeared in the menu bar.
-Optional live test: run `claude` or `codex` in a terminal; within about 10
-seconds the icon becomes `●` and a keep-awake notification appears. Quitting
-the CLI restores `○` roughly 30 seconds later.
+Finally, ask the user to confirm the AgentAwake logo appeared in the menu
+bar, dimmed while sleep is normal. Optional live test: run `claude` or
+`codex` in a terminal; within about 10 seconds the logo turns full opacity
+and a keep-awake notification appears. Quitting the CLI dims the logo again
+roughly 30 seconds later.
 
 ## Updating an existing install
 
