@@ -1,6 +1,6 @@
 local obj = {
   name = "AgentAwake",
-  version = "0.2.0",
+  version = "0.2.1",
   author = "Ramy",
   license = "MIT",
   pollInterval = 10,
@@ -125,11 +125,17 @@ function obj:_desiredState()
 end
 
 function obj:_parsePowerState(output)
-  local value = (output or ""):match("SleepDisabled%s+(%d+)")
-  if value == nil then
-    return nil
+  output = output or ""
+  local value = output:match("SleepDisabled%s+(%d+)")
+  if value ~= nil then
+    return tonumber(value) == 1
   end
-  return tonumber(value) == 1
+  -- pmset -g omits the SleepDisabled line entirely until disablesleep has
+  -- been written at least once; on such machines sleep is not disabled.
+  if output:find("Currently in use:", 1, true) then
+    return false
+  end
+  return nil
 end
 
 function obj:_mergePendingRequest(disabled, force)

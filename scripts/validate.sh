@@ -23,6 +23,7 @@ fi
 
 if [ -n "$LUA_RUNTIME" ]; then
   "$LUA_RUNTIME" "$PROJECT_DIR/tests/process_detection_spec.lua"
+  "$LUA_RUNTIME" "$PROJECT_DIR/tests/power_state_spec.lua"
 else
   echo "No Lua runtime found; process tests require Hammerspoon or a Lua runtime."
 fi

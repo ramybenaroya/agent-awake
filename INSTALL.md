@@ -161,6 +161,18 @@ Verify (must succeed without prompting for a password):
 sudo -n -l /usr/bin/pmset -a disablesleep 1
 ```
 
+Finally, seed the `SleepDisabled` key if this machine has never toggled it.
+On a machine where `disablesleep` has never been written, `pmset -g` omits
+the `SleepDisabled` line entirely, and older versions of the Spoon reported
+that as an error:
+
+```sh
+pmset -g | grep -q SleepDisabled \
+  || sudo -n /usr/bin/pmset -a disablesleep 0
+```
+
+Verify: `pmset -g | grep SleepDisabled` prints a line ending in `0` or `1`.
+
 ## 5. Reload Hammerspoon
 
 ```sh
