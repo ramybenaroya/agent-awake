@@ -12,7 +12,9 @@ Conventions:
 - Step 0 also decides the install mode — `symlink` or `copy`. Step 2 and the
   uninstall notes depend on it.
 - Every step must be idempotent: check the current state before changing
-  anything, and skip work that is already done.
+  anything, and skip work that is already done. Because of this, re-running
+  the whole guide on a machine where AgentAwake is already installed is the
+  supported update flow — see "Updating an existing install" at the end.
 - If a step needs `sudo` and you cannot authenticate interactively, print the
   exact commands for the user to run, wait for them to confirm, then verify
   the result yourself before continuing.
@@ -35,7 +37,25 @@ containing this file also contains `AgentAwake.spoon/init.lua` (for example,
 the project was shared as a plain folder).
 
 - **Inside the repo** — use the checkout root as `<project>` and continue in
-  `symlink` mode.
+  `symlink` mode. Bring the checkout up to date with the latest `main`
+  before installing:
+
+  ```sh
+  git -C "<project>" fetch origin
+  git -C "<project>" status --porcelain --branch
+  ```
+
+  If the working tree is clean and `main` is checked out, fast-forward it:
+
+  ```sh
+  git -C "<project>" merge --ff-only origin/main
+  ```
+
+  If the tree is dirty, a different branch is checked out, the merge cannot
+  fast-forward, or there is no `origin` remote to fetch, do not touch the
+  checkout — it may be a working copy in active development. Tell the user
+  and continue with the checkout as it is, unless they ask you to stop.
+
 - **Not inside the repo** — clone it to a temporary directory, use that clone
   as `<project>`, and continue in `copy` mode:
 
@@ -43,6 +63,9 @@ the project was shared as a plain folder).
   PROJECT="$(mktemp -d)/agent-awake"
   git clone https://github.com/ramybenaroya/agent-awake.git "$PROJECT"
   ```
+
+  A fresh clone is already at the latest `main`, so `copy` mode needs no
+  separate update handling.
 
 The mode matters because a temporary clone is eventually cleaned up by the
 OS: a symlink into it would dangle. `copy` mode therefore installs the Spoon
@@ -197,6 +220,25 @@ Finally, ask the user to confirm a `○` icon appeared in the menu bar.
 Optional live test: run `claude` or `codex` in a terminal; within about 10
 seconds the icon becomes `●` and a keep-awake notification appears. Quitting
 the CLI restores `○` roughly 30 seconds later.
+
+## Updating an existing install
+
+To update AgentAwake to the latest `main`, run the guide again from step 0.
+No step needs to be skipped; each one detects an up-to-date state on its own:
+
+- Step 0 fast-forwards a permanent checkout to `origin/main` (`symlink`
+  mode) or produces a fresh clone that is already current (`copy` mode).
+- Step 2 refreshes the installed Spoon: in `symlink` mode the existing
+  symlink already points at the updated checkout, and in `copy` mode
+  replacing the copied directory is the normal upgrade path.
+- Steps 1, 3, and 4 find their work already done and skip it.
+- Step 5's reload is what actually loads the new code — never skip it after
+  an update, and run step 6 afterwards to confirm the install is healthy.
+
+The two "stop and ask" exceptions in step 2 (a real directory found in
+`symlink` mode, or a symlink found in `copy` mode) still apply: they mean
+the previous install used the other mode, and the user must choose which
+one wins.
 
 ## Uninstall (for reference)
 

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/agent-awake-logo.svg" alt="AgentAwake logo" width="240">
+</p>
+
 # AgentAwake
 
 AgentAwake is a Hammerspoon Spoon that keeps macOS awake while selected coding
@@ -25,6 +29,10 @@ this repository. The guide is standalone — if the agent is not already inside
 a checkout of this repository, it clones
 <https://github.com/ramybenaroya/agent-awake> to a temporary directory and
 installs from there (copying the Spoon instead of symlinking).
+
+Re-running the guide on a machine where AgentAwake is already installed is
+the update flow: it brings `<project>` up to date with the latest `main`,
+refreshes the installed Spoon, and skips the steps that are already done.
 
 The project can live anywhere; Hammerspoon loads it through a symlink:
 
